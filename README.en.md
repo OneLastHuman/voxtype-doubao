@@ -3,7 +3,7 @@
 OpenAI-compatible proxy for the **free Doubao web ASR**, designed for
 [voxtype](https://github.com/peteonrails/voxtype). No Volcengine API key.
 
-**English** | [简体中文](README.md)
+**English** | [简体中文](README.md) | [Website](https://onelasthuman.github.io/voxtype-doubao/)
 
 > Unofficial. Uses the Doubao web endpoint and login cookies; the endpoint can
 > change without notice.

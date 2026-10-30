@@ -3,7 +3,7 @@
 给 [voxtype](https://github.com/peteonrails/voxtype) 用的豆包网页版 ASR 代理：
 OpenAI 兼容、不需要火山引擎 API key。
 
-**简体中文** | [English](README.en.md)
+**简体中文** | [English](README.en.md) | [在线介绍](https://onelasthuman.github.io/voxtype-doubao/)
 
 > 非官方项目，使用豆包网页版的接口和登录 cookie；接口可能随时变化。
 

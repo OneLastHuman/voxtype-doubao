@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>voxtype-doubao — 把豆包网页版 ASR 接进 voxtype</title>
+  <meta name="description" content="给 voxtype 用的豆包网页版 ASR 代理：OpenAI 兼容、不需要火山引擎 API key，只监听本机。">
+  <meta name="theme-color" content="#e9eee9">
+  <meta property="og:title" content="voxtype-doubao — 把豆包网页版 ASR 接进 voxtype">
+  <meta property="og:description" content="一个只监听本机的 OpenAI 兼容代理。按下热键说话，松开出字；不需要火山引擎 API key。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://onelasthuman.github.io/voxtype-doubao/">
+  <link rel="canonical" href="https://onelasthuman.github.io/voxtype-doubao/">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="./" aria-label="voxtype-doubao 首页">
+        <svg class="brand-mark" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <circle cx="4.5" cy="14" r="2.4" fill="currentColor"/>
+          <path d="M10 14h2.5M15 9v10M19.5 5.5v17M24 11v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-name">voxtype<span class="brand-slash">/</span>doubao</span>
+      </a>
+
+      <nav class="site-nav" aria-label="主导航">
+        <a href="#how">工作原理</a>
+        <a href="#start">快速开始</a>
+        <a href="#compat">兼容性</a>
+        <a href="#caveats">须知</a>
+        <a class="nav-source" href="https://github.com/OneLastHuman/voxtype-doubao">
+          GitHub
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path d="M3 8h9M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <p class="hero-kicker">
+          <span class="rec-dot" aria-hidden="true"></span>
+          <span class="mono">localhost:8788</span>
+          <span class="kicker-rule" aria-hidden="true"></span>
+          <span class="mono">OpenAI-compatible</span>
+        </p>
+
+        <h1>豆包网页版 ASR，<br>接进 voxtype。</h1>
+
+        <p class="hero-lede">一个只监听本机的代理。按下热键说话，松开出字；不需要火山引擎 API key，也不用改变 voxtype 的用法。</p>
+
+        <div class="hero-actions">
+          <a class="button button-primary" href="#start">四步接通</a>
+          <a class="button button-quiet" href="https://github.com/OneLastHuman/voxtype-doubao">
+            查看源码
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3 8h9M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <ul class="hero-facts" aria-label="项目概况">
+          <li><span class="fact-key">测试</span><span class="fact-value">Omarchy</span></li>
+          <li><span class="fact-key">音频</span><span class="fact-value">PipeWire</span></li>
+          <li><span class="fact-key">许可</span><span class="fact-value">MIT</span></li>
+        </ul>
+      </div>
+
+      <aside class="patch-panel" aria-label="音频信号链示意">
+        <div class="panel-head">
+          <span class="panel-label">signal chain</span>
+          <span class="panel-status"><span class="status-dot" aria-hidden="true"></span> localhost</span>
+        </div>
+
+        <div class="scope" aria-hidden="true">
+          <div class="scope-head">
+            <span class="rec-label"><span class="rec-dot"></span> REC</span>
+            <span class="scope-time">00:03.42</span>
+          </div>
+          <svg class="scope-wave" viewBox="0 0 360 96" preserveAspectRatio="none">
+            <path class="wave-path" pathLength="1" d="M0 48 L6 48 L8 44 L10 52 L12 48 L18 48 L20 34 L22 62 L24 48 L30 48 L32 40 L34 56 L36 48 L42 48 L44 26 L46 70 L48 48 L54 48 L56 42 L58 54 L60 48 L66 48 L68 36 L70 60 L72 48 L78 48 L80 30 L82 66 L84 48 L90 48 L92 44 L94 52 L96 48 L102 48 L104 22 L106 74 L108 48 L114 48 L116 38 L118 58 L120 48 L126 48 L128 46 L130 50 L132 48 L138 48 L140 32 L142 64 L144 48 L150 48 L152 42 L154 54 L156 48 L162 48 L164 28 L166 68 L168 48 L174 48 L176 40 L178 56 L180 48 L186 48 L188 36 L190 60 L192 48 L198 48 L200 44 L202 52 L204 48 L210 48 L212 26 L214 70 L216 48 L222 48 L224 38 L226 58 L228 48 L234 48 L236 42 L238 54 L240 48 L246 48 L248 30 L250 66 L252 48 L258 48 L260 44 L262 52 L264 48 L270 48 L272 36 L274 60 L276 48 L282 48 L284 46 L286 50 L288 48 L294 48 L296 32 L298 64 L300 48 L306 48 L308 42 L310 54 L312 48 L318 48 L320 38 L322 58 L324 48 L330 48 L332 46 L334 50 L336 48 L342 48 L344 28 L346 68 L348 48 L354 48 L356 44 L358 52 L360 48"/>
+            <g class="playhead-group">
+              <line class="playhead" x1="238" y1="8" x2="238" y2="88"/>
+              <circle class="playhead-dot" cx="238" cy="48" r="3"/>
+            </g>
+          </svg>
+          <div class="scope-foot"><span>prestream</span><span>16 kHz PCM</span></div>
+        </div>
+
+        <div class="chain">
+          <div class="chain-node">
+            <span class="node-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="node-text"><strong>MIC</strong><small>默认输入源</small></span>
+          </div>
+          <div class="chain-wire"><span>parecord</span></div>
+
+          <div class="chain-node chain-node-proxy">
+            <span class="node-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 12h3M9 6v12M15 3v18M21 9v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="node-text"><strong>127.0.0.1:8788</strong><small>voxtype-doubao</small></span>
+          </div>
+          <div class="chain-wire"><span>WebSocket + cookie</span></div>
+
+          <div class="chain-node">
+            <span class="node-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M7 18h10a4 4 0 0 0 .7-7.94A6 6 0 0 0 6.2 9.2 4.4 4.4 0 0 0 7 18Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="node-text"><strong>Doubao web ASR</strong><small>网页版听写</small></span>
+          </div>
+          <div class="chain-wire"><span>text</span></div>
+
+          <div class="chain-node">
+            <span class="node-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M8 4v16M8 12h8M16 4v16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="node-text"><strong>voxtype</strong><small>当前光标</small></span>
+          </div>
+        </div>
+
+        <div class="panel-foot"><span>no API key</span><span>audio → Doubao</span></div>
+      </aside>
+    </section>
+
+    <section id="how" class="section shell">
+      <div class="section-head">
+        <h2>声音怎么走到光标</h2>
+        <p>voxtype 仍然负责录音和输入；这个项目只补上“豆包网页版”这一段。</p>
+      </div>
+
+      <ol class="flow">
+        <li>
+          <span class="flow-num">01</span>
+          <h3>录音与预流式</h3>
+          <p>voxtype 按住热键录音。代理用 <code>parecord</code> 监听默认输入源，录音期间就开始上传。</p>
+          <p class="flow-note">要求 voxtype 的 <code>[audio] device = "default"</code> 与系统默认输入源一致。</p>
+        </li>
+        <li>
+          <span class="flow-num">02</span>
+          <h3>本机代理</h3>
+          <p><code>voxtype-doubao</code> 在 <code>127.0.0.1:8788</code> 提供 <code>/v1/audio/transcriptions</code>，用你的登录 cookie 连接豆包网页版 ASR。</p>
+          <p class="flow-note">OpenAI 兼容，所以 voxtype 不需要为它改代码，只用 remote Whisper 模式。</p>
+        </li>
+        <li>
+          <span class="flow-num">03</span>
+          <h3>回写文本</h3>
+          <p>voxtype 拿到返回的文本，松开热键后输入到当前光标。</p>
+          <p class="flow-note">文字仍然是一次性出现，不是光标级 partial。</p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="features" class="section shell">
+      <div class="section-head">
+        <h2>它做什么，不做什么</h2>
+        <p>不是新的输入法，也不是另一套快捷键；只是把 voxtype 的 remote Whisper 后端换成豆包网页版。</p>
+      </div>
+
+      <dl class="spec-list">
+        <div><dt>接口</dt><dd><code>POST /v1/audio/transcriptions</code>，OpenAI 兼容</dd></div>
+        <div><dt>客户端</dt><dd>voxtype 1.1.x，<code>[whisper] mode = "remote"</code></dd></div>
+        <div><dt>凭证</dt><dd>豆包网页版登录 cookie；WebKit 窗口保存，或从 doubao-murmur 导入</dd></div>
+        <div><dt>预流式</dt><dd>默认开启；录音时上传，松开后返回</dd></div>
+        <div><dt>输出</dt><dd>松开后一次性写入；不是光标级 partial</dd></div>
+        <div><dt>网络</dt><dd>只监听 <code>127.0.0.1:8788</code></dd></div>
+        <div><dt>服务</dt><dd>systemd 用户服务 <code>voxtype-doubao.service</code></dd></div>
+      </dl>
+    </section>
+
+    <section id="start" class="section shell">
+      <div class="section-head">
+        <h2>四步接通</h2>
+        <p>从 clone 到第一次听写。命令默认在仓库根目录执行。</p>
+      </div>
+
+      <div class="steps">
+        <article class="step">
+          <span class="step-index">1</span>
+          <div class="step-body">
+            <div class="step-head"><h3>安装</h3><span class="step-hint">Arch / Omarchy</span></div>
+            <p>安装脚本会创建 <code>.venv</code> 并安装依赖。</p>
+            <div class="code-block">
+              <div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="复制安装命令">复制</button></div>
+              <pre><code>git clone https://github.com/OneLastHuman/voxtype-doubao.git
+cd voxtype-doubao
+./scripts/install.sh</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <span class="step-index">2</span>
+          <div class="step-body">
+            <div class="step-head"><h3>登录豆包</h3><span class="step-hint">cookie</span></div>
+            <p>在打开的豆包页面登录，等页面加载完，点右上角“保存登录”。</p>
+            <div class="code-block">
+              <div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="复制登录命令">复制</button></div>
+              <pre><code>.venv/bin/voxtype-doubao login</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <span class="step-index">3</span>
+          <div class="step-body">
+            <div class="step-head"><h3>把 voxtype 指向代理</h3><span class="step-hint">remote whisper</span></div>
+            <p>在 <code>~/.config/voxtype/config.toml</code> 里使用 remote 模式，然后重启 voxtype。</p>
+            <div class="code-block">
+              <div class="code-head"><span>toml</span><button class="copy" type="button" aria-label="复制 voxtype 配置">复制</button></div>
+              <pre><code>[whisper]
+mode = "remote"
+remote_endpoint = "http://127.0.0.1:8788"
+remote_model = "doubao-web-asr"
+remote_timeout_secs = 60</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="复制重启命令">复制</button></div>
+              <pre><code>systemctl --user restart voxtype</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <span class="step-index">4</span>
+          <div class="step-body">
+            <div class="step-head"><h3>启动代理</h3><span class="step-hint">systemd user</span></div>
+            <p>安装并启动用户服务，然后确认状态。</p>
+            <div class="code-block">
+              <div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="复制服务命令">复制</button></div>
+              <pre><code>.venv/bin/voxtype-doubao install-service
+.venv/bin/voxtype-doubao status</code></pre>
+            </div>
+            <p class="flow-note">日志：<code>journalctl --user -u voxtype-doubao -f</code></p>
+          </div>
+        </article>
+      </div>
+
+      <details class="more">
+        <summary>更多选项</summary>
+        <div class="more-content">
+          <h3>手动安装</h3>
+          <div class="code-block">
+            <div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="复制手动安装命令">复制</button></div>
+            <pre><code>python3 -m venv --system-site-packages .venv
+.venv/bin/pip install -e .</code></pre>
+          </div>
+
+          <h3>已有 doubao-murmur 凭证</h3>
+          <div class="code-block">
+            <div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="复制导入命令">复制</button></div>
+            <pre><code>.venv/bin/voxtype-doubao import</code></pre>
+          </div>
+
+          <h3>关闭预流式</h3>
+          <p>如果不需要录音期间上传，可以关闭：</p>
+          <div class="code-block">
+            <div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="复制关闭预流式命令">复制</button></div>
+            <pre><code>.venv/bin/voxtype-doubao install-service --no-prestream</code></pre>
+          </div>
+          <p>或设置环境变量 <code>DOUBAO_PRESTREAM=0</code>。</p>
+        </div>
+      </details>
+    </section>
+
+    <section id="compat" class="section shell">
+      <div class="section-head">
+        <h2>测试环境</h2>
+        <p>在 Omarchy 上开发和测试；其他发行版理论可用，但未逐一验证。</p>
+      </div>
+
+      <div class="compat-grid">
+        <div class="compat-stamp">
+          <span class="stamp-label">tested on</span>
+          <h3>Omarchy</h3>
+          <p>Arch Linux + Hyprland</p>
+          <p class="stamp-meta">voxtype 1.1.x<br>PipeWire</p>
+        </div>
+
+        <dl class="spec-list compat-list">
+          <div><dt>音频</dt><dd>PipeWire 或 PulseAudio</dd></div>
+          <div><dt>录音</dt><dd><code>parecord</code>（Arch 在 <code>libpulse</code>）</dd></div>
+          <div><dt>客户端</dt><dd>voxtype 1.1.x</dd></div>
+          <div><dt>Python</dt><dd>3.11+</dd></div>
+          <div><dt>登录窗口</dt><dd><code>python-gobject</code>、<code>gtk4</code>、<code>webkit2gtk-4.1</code>（可选）</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section id="caveats" class="caveats">
+      <div class="shell caveats-inner">
+        <div class="caveat-mark" aria-hidden="true">!</div>
+        <div>
+          <h2>先知道这些</h2>
+          <ul>
+            <li><strong>非官方。</strong>与字节跳动、豆包、火山引擎没有任何关联。</li>
+            <li><strong>接口会变。</strong>使用豆包网页版的非公开接口和登录 cookie；可能变更、限流或失效，不保证持续可用。</li>
+            <li><strong>Cookie 是凭证。</strong>不要提交或分享；<code>params.json</code> 默认权限 <code>0600</code>。代理只应监听 <code>127.0.0.1</code>，不要暴露到公网。</li>
+            <li><strong>音频会出本机。</strong>录音会发送到豆包服务器；敏感或机密内容不要用，除非你接受相应的隐私风险。</li>
+            <li><strong>风险自负。</strong>请遵守豆包服务条款和当地法律法规；账号限制、封禁、数据丢失等风险由使用者承担。</li>
+            <li><strong>按原样提供。</strong>MIT 许可证，不附带任何明示或暗示的担保。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <svg class="brand-mark" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+            <circle cx="4.5" cy="14" r="2.4" fill="currentColor"/>
+            <path d="M10 14h2.5M15 9v10M19.5 5.5v17M24 11v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div>
+            <p class="footer-name">voxtype-doubao</p>
+            <p class="footer-tag">把豆包网页版 ASR 接进 voxtype。</p>
+          </div>
+        </div>
+
+        <nav class="footer-links" aria-label="页脚链接">
+          <a href="https://github.com/OneLastHuman/voxtype-doubao">GitHub</a>
+          <a href="https://github.com/OneLastHuman/voxtype-doubao/blob/main/README.md">中文 README</a>
+          <a href="https://github.com/OneLastHuman/voxtype-doubao/blob/main/README.en.md">English</a>
+          <a href="https://github.com/OneLastHuman/voxtype-doubao/issues">Issues</a>
+          <a href="https://github.com/OneLastHuman/voxtype-doubao/blob/main/LICENSE">MIT License</a>
+        </nav>
+      </div>
+
+      <p class="footer-note">非官方项目，与字节跳动、豆包、火山引擎无关联。音频会发送到豆包服务器；请在遵守服务条款和当地法律的前提下使用。</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

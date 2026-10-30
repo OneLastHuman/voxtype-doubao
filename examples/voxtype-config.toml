@@ -1,0 +1,6 @@
+[whisper]
+# voxtype 1.1.x: the remote backend is batch-only; this proxy adds pre-stream.
+mode = "remote"
+remote_endpoint = "http://127.0.0.1:8788"
+remote_model = "doubao-web-asr"
+remote_timeout_secs = 60

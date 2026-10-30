@@ -1,0 +1,19 @@
+voxtype-doubao
+==============
+
+Standalone OpenAI-compatible proxy for the free Doubao (豆包) web ASR service,
+designed for [voxtype](https://github.com/peteonrails/voxtype).
+
+It does not require an official Volcengine API key and does not depend on
+[doubao-murmur](https://github.com/lilong7676/doubao-murmur) at runtime.
+
+Attribution
+-----------
+
+The Doubao WebSocket client and the WebKitGTK login flow are adapted from
+doubao-murmur, Copyright (c) 2026 lilong7676, MIT License. The full upstream
+license is included in LICENSE.
+
+This project is not affiliated with ByteDance or Doubao. It uses the same
+unofficial web endpoint as the Doubao web client; the endpoint and login
+scheme can change without notice.

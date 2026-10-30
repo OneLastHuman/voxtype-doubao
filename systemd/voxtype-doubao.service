@@ -1,0 +1,14 @@
+[Unit]
+Description=Voxtype Doubao Web ASR proxy
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=PYTHONUNBUFFERED=1
+ExecStart=%h/.local/bin/voxtype-doubao serve --host 127.0.0.1 --port 8788
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

@@ -8,6 +8,10 @@ OpenAI-compatible proxy for the **free Doubao web ASR**, designed for
 > Unofficial. Uses the Doubao web endpoint and login cookies; the endpoint can
 > change without notice.
 
+## Tested environment
+
+Developed and tested on **Omarchy (Arch Linux + Hyprland)** with voxtype 1.1.x and PipeWire. Other Arch-based or Linux distributions should work but are not verified.
+
 ## Quick start
 
 ### 1. Requirements
@@ -120,6 +124,15 @@ Common `serve` options: `--port`, `--no-prestream`, `--verbose`.
 - Unofficial endpoint; cookies expire; audio is sent to Doubao.
 - Credentials live in `~/.config/voxtype-doubao/params.json` (mode 0600).
 - The proxy listens on `127.0.0.1` only. Do not expose it publicly.
+
+## Disclaimer
+
+- This is an unofficial project. It is not affiliated with ByteDance, Doubao, or Volcengine.
+- It uses the non-public Doubao web endpoint and login cookies. The endpoint may change, rate-limit, or stop working at any time; no availability guarantee is provided.
+- Use at your own risk. You are responsible for complying with Doubao's terms of service and applicable laws. The authors are not liable for account restrictions, bans, data loss, or other damages.
+- Cookies are credentials. Never commit or share them; `params.json` is mode `0600` by default. Keep the proxy bound to `127.0.0.1`; do not expose it publicly.
+- Audio is sent to Doubao servers. Do not use it for sensitive or confidential content unless you accept the privacy risk.
+- Provided "as is" under the MIT license, without warranties of any kind.
 
 ## License
 

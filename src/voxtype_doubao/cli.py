@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import os
+import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -12,6 +14,13 @@ from pathlib import Path
 from . import __version__
 from .auth import ParamsStore, import_from_doubao_murmur
 from .config import get_params_path
+from .voxtype_config import (
+    DEFAULT_ENDPOINT,
+    DEFAULT_MODEL,
+    DEFAULT_TIMEOUT,
+    config_path as voxtype_config_path,
+    configure as configure_voxtype,
+)
 
 SERVICE_NAME = "voxtype-doubao.service"
 
@@ -70,24 +79,105 @@ def cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def _voxtype_state_path() -> Path:
+    runtime = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
+    return runtime / "voxtype" / "state"
+
+
+def _proxy_listening(port: int = 8788) -> bool:
+    try:
+        with socket.create_connection(("127.0.0.1", port), timeout=0.25):
+            return True
+    except OSError:
+        return False
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     path = get_params_path()
-    print(f"version: {__version__}")
-    print(f"params:  {path} ({'present' if path.exists() else 'missing'})")
     params = ParamsStore.load()
-    if params is not None:
-        summary = params.summary()
-        print(
-            f"cookies: {summary['cookies']}, device_id: {summary['device_id']}, "
-            f"web_id: {summary['web_id']}"
-        )
+    summary = params.summary() if params is not None else {}
     result = subprocess.run(
         ["systemctl", "--user", "is-active", SERVICE_NAME],
         capture_output=True,
         text=True,
         check=False,
     )
-    print(f"service: {result.stdout.strip() or 'unknown'}")
+    service = result.stdout.strip() or "unknown"
+    state_path = _voxtype_state_path()
+    try:
+        state = state_path.read_text(encoding="utf-8").strip() or "unknown"
+    except OSError:
+        state = "unknown"
+    listening = _proxy_listening()
+
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "version": __version__,
+                    "params": {
+                        "path": str(path),
+                        "present": params is not None,
+                        "cookies": summary.get("cookies", 0),
+                        "device_id": bool(summary.get("device_id")),
+                        "web_id": bool(summary.get("web_id")),
+                    },
+                    "service": service,
+                    "proxy": {
+                        "host": "127.0.0.1",
+                        "port": 8788,
+                        "listening": listening,
+                    },
+                    "voxtype": {
+                        "state": state,
+                        "path": str(state_path),
+                    },
+                },
+                ensure_ascii=False,
+            )
+        )
+        return 0
+
+    print(f"version: {__version__}")
+    print(f"params:  {path} ({'present' if path.exists() else 'missing'})")
+    if params is not None:
+        print(
+            f"cookies: {summary['cookies']}, device_id: {summary['device_id']}, "
+            f"web_id: {summary['web_id']}"
+        )
+    print(f"service: {service}")
+    print(f"proxy:   {'listening' if listening else 'not listening'} on 127.0.0.1:8788")
+    print(f"voxtype: {state}")
+    return 0
+
+
+def cmd_configure(args: argparse.Namespace) -> int:
+    target = Path(args.config).expanduser() if args.config else voxtype_config_path()
+    if args.timeout <= 0:
+        print("--timeout must be positive", file=sys.stderr)
+        return 1
+    if not args.yes and not args.dry_run:
+        print(f"Point voxtype at the local proxy in {target}?")
+        answer = input("Continue? [Y/n] ").strip().lower()
+        if answer not in ("", "y", "yes"):
+            return 1
+    try:
+        updated = configure_voxtype(
+            target,
+            endpoint=args.endpoint,
+            model=args.model,
+            timeout=args.timeout,
+            dry_run=args.dry_run,
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Cannot update voxtype config: {exc}", file=sys.stderr)
+        return 1
+    if args.dry_run:
+        print(updated.text, end="")
+        return 0
+    print(f"Updated {updated.path}")
+    if updated.backup is not None:
+        print(f"Backup: {updated.backup}")
     return 0
 
 
@@ -143,7 +233,17 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--verbose", action="store_true")
     serve.set_defaults(func=cmd_serve)
 
+    configure = sub.add_parser("configure", help="point voxtype at the local proxy")
+    configure.add_argument("--config", help="path to voxtype config.toml")
+    configure.add_argument("--endpoint", default=DEFAULT_ENDPOINT)
+    configure.add_argument("--model", default=DEFAULT_MODEL)
+    configure.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT)
+    configure.add_argument("--dry-run", action="store_true")
+    configure.add_argument("--yes", action="store_true")
+    configure.set_defaults(func=cmd_configure)
+
     status = sub.add_parser("status", help="show credential and service status")
+    status.add_argument("--json", action="store_true", help="machine-readable output")
     status.set_defaults(func=cmd_status)
 
     install = sub.add_parser("install-service", help="install and start a systemd user service")

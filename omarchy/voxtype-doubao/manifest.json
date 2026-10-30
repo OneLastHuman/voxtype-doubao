@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "user.voxtype-doubao",
+  "name": "Voxtype Doubao",
+  "version": "0.1.0",
+  "author": "voxtype-doubao contributors",
+  "license": "MIT",
+  "description": "Doubao web ASR proxy status in the Omarchy bar.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Voxtype Doubao",
+    "description": "Shows whether the local Doubao ASR proxy is ready, recording, or transcribing.",
+    "category": "Audio",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

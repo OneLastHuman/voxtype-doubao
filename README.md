@@ -7,12 +7,29 @@ OpenAI 兼容、不需要火山引擎 API key。
 
 > 非官方项目，使用豆包网页版的接口和登录 cookie；接口可能随时变化。
 
+## 一键安装
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/OneLastHuman/voxtype-doubao/main/install.sh | bash
+```
+
+脚本会安装程序、配置 voxtype 并启动后台服务。在 Omarchy 上还会安装顶栏状态面板。装好后按 voxtype 热键说话。
+
+## Omarchy 状态面板
+
+右上角会出现“豆包”图标；点开是黑色状态面板，显示空闲、录音、转写或需要登录。手动安装：
+
+```bash
+python3 scripts/omarchy_install.py
+omarchy restart shell
+```
+
 ## 测试环境
 
 在 **Omarchy（Arch Linux + Hyprland）** 上开发和测试，使用 voxtype 1.1.x 与 PipeWire。
 其他 Arch 衍生版或 Linux 发行版理论可用，但未逐一验证。
 
-## 快速开始
+## 手动安装（可选）
 
 ### 1. 依赖
 

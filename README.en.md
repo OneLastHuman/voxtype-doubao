@@ -8,11 +8,28 @@ OpenAI-compatible proxy for the **free Doubao web ASR**, designed for
 > Unofficial. Uses the Doubao web endpoint and login cookies; the endpoint can
 > change without notice.
 
+## One-command install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/OneLastHuman/voxtype-doubao/main/install.sh | bash
+```
+
+The script installs the proxy, configures voxtype, starts the background service, and adds the Omarchy bar widget when available. Then press your voxtype hotkey and speak.
+
+## Omarchy status panel
+
+The top-right corner gets a “豆包” icon. Click it for a black status panel showing idle, recording, transcribing, or login required. Manual install:
+
+```bash
+python3 scripts/omarchy_install.py
+omarchy restart shell
+```
+
 ## Tested environment
 
 Developed and tested on **Omarchy (Arch Linux + Hyprland)** with voxtype 1.1.x and PipeWire. Other Arch-based or Linux distributions should work but are not verified.
 
-## Quick start
+## Manual install (optional)
 
 ### 1. Requirements
 
